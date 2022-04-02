@@ -380,7 +380,7 @@ void mainProcess()
                     std::cout << "\nAdded module, " << finalModuleName << ", with grade, " << finalGrade << ", and credits, " << finalCredit << ", to gpa.json...\n";
                     gpaMap[finalModuleName] = std::make_tuple(finalGrade, finalCredit);
                     saveToPC(gpaMap);
-                    std::cout << "--------------------------------------------------------------------------\n";
+                    std::cout << "------------------------------------------------------------------------------------\n";
                 }
             }
             
