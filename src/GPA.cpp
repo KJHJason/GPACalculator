@@ -476,7 +476,6 @@ void mainProcess()
                                     std::cout << "Error: Invalid credit input or credit input was larger than 99...\n";
                                 }
                             }
-                            
 
                         } else if (editCommand == "S" && editedInfo) {
                             std::cout << "Are you sure that you would to save the changes? (y/n): ";
