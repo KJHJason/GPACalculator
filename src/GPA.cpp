@@ -14,12 +14,14 @@
 typedef std::map<std::string, std::tuple<std::string, int>> gpaHashMapStruc;
 
 const std::string version = "0.1.0";
+
 Json::Reader reader;
 Json::Value root;
 const std::string jsonFile = "gpa.json";
+
 // based on https://www.nyp.edu.sg/current-students/academic-matters/nyp-assessment-regulations.html
 const std::map<std::string, float> gpaRef = {
-    {"DIST", 4.0}, // awarded by the Assessment Board
+    {"DIST", 4.0}, // awarded by the Assessment Board, though it is the same as grade A
     {"A", 4.0},
     {"B+", 3.5},
     {"B", 3.0},
