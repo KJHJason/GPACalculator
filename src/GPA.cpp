@@ -144,7 +144,7 @@ bool checkIfInputIsValidGrade(std::string grade)
     } else if (gradeLen != 1) return false;
 
     auto it = gpaRef.find(grade);
-    if ( it != gpaRef.end()) return true;
+    if (it != gpaRef.end()) return true;
     else return false;
 }
 
