@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <chrono>
 #include <thread>
+#include <limits>
 #include "../dep/jsoncpp/jsoncpp.cpp" // relies on jsoncpp at https://github.com/open-source-parsers/jsoncpp
 
 typedef std::map<std::string, std::tuple<std::string, int>> gpaHashMapStruc;
@@ -84,9 +85,9 @@ void shutdown()
     pEnd();
     std::cout << "Thank you for using GPA Calculator v" << version;
     pEnd();
-    std::cin.clear(); // clear buffer
     std::cout << "Please press ENTER to continue..."; 
     std::cin.get();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     for (int i = 3; i >= 0; i--) { 
         std::cout << "Automatically shutting down in " << i << " seconds...";
         std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -341,7 +342,8 @@ void mainProcess()
                 while (continueAdding) {
                     std::string moduleCredit;
                     bool addedCredit = false;
-                    std::cout << "\nPlease enter the number of credits for \"" << finalModuleName << "\" (x to cancel): "; std::cin >> moduleCredit;
+                    std::cout << "\nPlease enter the number of credits for \"" << finalModuleName << "\" (x to cancel): "; 
+                    std::getline(std::cin, moduleCredit);
                     if (uppercaseInput(moduleCredit) == "X") {
                         continueAdding = false;
                         break;
@@ -352,8 +354,7 @@ void mainProcess()
                             while (1) {
                                 std::string confirmInput;
                                 std::cout << "Are you sure that you would to add the module credits of, " << moduleCredit << ", for the module, " << finalModuleName << "? (y/n): "; 
-                                std::cin >> confirmInput;
-                                std::cin.clear();
+                                std::getline(std::cin, confirmInput);
                                 confirmInput = uppercaseInput(confirmInput);
                                 if (confirmInput == "Y") {
                                     finalCredit = moduleCreditNum;
