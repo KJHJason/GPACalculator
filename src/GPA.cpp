@@ -28,7 +28,7 @@ const std::map<std::string, float> gpaRef = {
     {"D+", 1.5},
     {"D", 1.0},
     {"F", 0.0},
-    {"P", 0.0} // p for pass (GSM), will not be counted during calculation of GPA
+    {"P", 0.0} // p for pass (GSM), will not be used during calculation of GPA
 };
 
 std::string uppercaseInput(std::string s)
