@@ -10,3 +10,6 @@ I'm still in the midst of learning C++ so if there are bugs, please let me know.
 - Edit your results and save the changes
 - Delete a module from the json file
 - Read all modules from the json file
+
+## Dependencies
+- [jsoncpp](https://github.com/open-source-parsers/jsoncpp)
