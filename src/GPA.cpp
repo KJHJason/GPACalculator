@@ -160,7 +160,7 @@ void printMsgWithNthPrec(const std::vector<std::string>& msgArr, int prec)
     pEnd();
 }
 
-void printMenu(int gpa, bool validJsonFile)
+void printMenu(float gpa, bool validJsonFile)
 {
     std::cout << "\n\n------------ Menu ------------\n\n";
     std::string gpaString;
@@ -211,8 +211,8 @@ void readJsonGPAData(gpaHashMapStruc gpaMap)
 
 float calculateGPA(gpaHashMapStruc gpaMap)
 {
-    float totalCredits = 0;
-    float totalGrade = 0;
+    int totalCredits = 0;
+    int totalGrade = 0;
     for(gpaHashMapStruc::const_iterator it = gpaMap.begin(); it != gpaMap.end(); it++) {
         std::string grade = std::get<0>(it->second);
         if (grade != "P") {
@@ -221,7 +221,7 @@ float calculateGPA(gpaHashMapStruc gpaMap)
             totalGrade += gradeToFloat(grade) * credits;
         }
     }
-    return totalGrade / totalCredits;
+    return totalGrade / (float)totalCredits;
 }
 
 void mainProcess()
@@ -380,7 +380,7 @@ void mainProcess()
                     std::cout << "\nAdded module, " << finalModuleName << ", with grade, " << finalGrade << ", and credits, " << finalCredit << ", to gpa.json...\n";
                     gpaMap[finalModuleName] = std::make_tuple(finalGrade, finalCredit);
                     saveToPC(gpaMap);
-                    std::cout << "------------------------------------------------------\n";
+                    std::cout << "--------------------------------------------------------------------------\n";
                 }
             }
             
