@@ -381,9 +381,9 @@ void mainProcess()
                     gpaMap[finalModuleName] = std::make_tuple(finalGrade, finalCredit);
                     saveToPC(gpaMap);
                     std::cout << "------------------------------------------------------------------------------------\n";
+                    jsonValid = true;
                 }
             }
-            
 
         } else if (userInput == "2" && jsonValid) {
             // edit existing module result
