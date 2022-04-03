@@ -190,7 +190,7 @@ void readJsonGPAData(gpaHashMapStruc gpaMap)
 {
     pEnd();
     std::cout << "----------------------------------------------\n\n";
-    std::cout << "Reading GPA data in the format,\n\n";
+    std::cout << "Reading GPA data...\n\n";
     for(gpaHashMapStruc::const_iterator it = gpaMap.begin(); it != gpaMap.end(); it++) {
         std::string moduleName = it->first;
         std::tuple<std::string, int> value = it->second;
