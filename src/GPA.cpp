@@ -51,8 +51,9 @@ std::string titleInput(std::string s)
             s[i] = toupper(c);
             toUpper = 0;
         } else if(isspace(s[i])) {
-            s[i] = tolower(c);
             toUpper = 1;
+        } else {
+            s[i] = tolower(c);
         }
         i++;
     }
