@@ -194,7 +194,7 @@ void readJsonGPAData(gpaHashMapStruc gpaMap)
     for(gpaHashMapStruc::const_iterator it = gpaMap.begin(); it != gpaMap.end(); it++) {
         std::string moduleName = it->first;
         std::tuple<std::string, int> value = it->second;
-        std::cout << moduleName << " (" << std::get<1>(value) << "): " << std::get<0>(value) << "\n";
+        std::cout << "- " << moduleName << " (" << std::get<1>(value) << "): " << std::get<0>(value) << "\n";
     }
     pEnd();
     std::cout << "Format:\nModule Name (Max Credits): Your Grade\n";
@@ -559,7 +559,7 @@ void logError(std::string errorMessage) {
         errorLogFileStream << "GPA Calculator v" << version << " Error Logs\n\n";
         errorLogFileStream.close();
     }
-    
+
     std::ofstream errorLog;
     errorLog.open(errorLogFile, std::ios::app);
     
@@ -579,7 +579,6 @@ int main()
     std::cout << "============================ Author: KJHJason =============================\n";
     std::cout << "============================== License: MIT ===============================\n";
     try {
-        std::stof("awd");
         mainProcess();
     } catch(const std::runtime_error& re) {
         std::cout << "\nRuntime error encountered: " << re.what();
