@@ -131,20 +131,8 @@ float gradeToFloat(std::string grade)
 bool checkIfInputIsValidGrade(std::string grade)
 {
     grade = uppercaseInput(grade);
-    int gradeLen = grade.length();
-    if (gradeLen == 4) {
-        if (grade != "DIST") return false;
-    } else if (gradeLen == 2) {
-        std::string charString = "";
-        charString += grade[0];
-        if (!checkIfInputIsAlphabets(charString)) return false;
-        if (gradeLen == 2) {
-            if (grade[1] != '+') return false;
-        }
-    } else if (gradeLen != 1) return false;
-
     auto it = gpaRef.find(grade);
-    if ( it != gpaRef.end()) return true;
+    if (it != gpaRef.end()) return true;
     else return false;
 }
 
@@ -174,26 +162,23 @@ void printMenu(float gpa, bool validJsonFile)
     printMsgWithNthPrec(msgArr, 2);
     pEnd();
 
-    int i = 1;
-    std::cout << i << ". Add new module results";
-    i++;
+    std::cout << "1. Add new module results";
     if (validJsonFile) {
         pEnd();
-        std::cout << i << ". Edit module results";
-        i++;
+
+        std::cout << "2. Edit module results";
         pEnd();
 
-        std::cout << i << ". Remove module results";
-        i++;
+        std::cout << "3. Remove module results";
         pEnd();
 
-        std::cout << i << ". View all module results";
-        i++;
+        std::cout << "4. View all module results";
     }
     pEnd();
 
     std::cout << "F. Shutdown";
     pEnd();
+
     std::cout << "\n-------------------------------";
 }
 
