@@ -122,6 +122,7 @@ void saveToPC(gpaHashMapStruc &oldGPAMap)
     std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
     std::ofstream out(jsonFile);
     writer->write(newGPAMap, &out);
+    out.close();
 }
 
 float gradeToFloat(std::string grade) 
@@ -223,6 +224,7 @@ void mainProcess()
     if (jsonFileExist) {
         std::ifstream file(jsonFile);
         bool parsed = reader.parse(file, root);
+        file.close();
         if (!parsed){
             std::cout << "\nError: Cannot parse json content...\n";
         } else {
