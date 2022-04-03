@@ -548,7 +548,6 @@ void mainProcess()
             readJsonGPAData(gpaMap);
 
         } else if (userInput != "F") { 
-            // shutdown
             std::cout << "Invalid command input, please enter a valid command from the menu above.\n";
         } 
     }
