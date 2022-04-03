@@ -7,6 +7,7 @@
 #include <fstream>
 #include <sys/stat.h>
 #include <chrono>
+#include <iomanip>
 #include <thread>
 #include <limits>
 #include "../dep/jsoncpp/jsoncpp.cpp" // relies on jsoncpp at https://github.com/open-source-parsers/jsoncpp
@@ -18,6 +19,8 @@ const std::string version = "0.1.0";
 Json::Reader reader;
 Json::Value root;
 const std::string jsonFile = "gpa.json";
+
+const std::string errorLogFile = "error-log-v" + version + ".log";
 
 // based on https://www.nyp.edu.sg/current-students/academic-matters/nyp-assessment-regulations.html
 const std::map<std::string, float> gpaRef = {
@@ -549,6 +552,26 @@ void mainProcess()
     }
 }
 
+void logError(std::string errorMessage) {
+    if (!checkIfFileExist(errorLogFile)) {
+        std::ofstream errorLogFileStream;
+        errorLogFileStream.open(errorLogFile);
+        errorLogFileStream << "GPA Calculator v" << version << " Error Logs\n\n";
+        errorLogFileStream.close();
+    }
+    
+    std::ofstream errorLog;
+    errorLog.open(errorLogFile, std::ios::app);
+    
+    errorLog << "\nError occurred at ";
+    time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    errorLog << std::put_time(localtime(&now), "%F %T") << "\n";
+
+    errorLog << "Error message: ";
+    errorLog << errorMessage << "\n";
+    errorLog.close();
+}
+
 int main() 
 {   
     std::cout << "========================== GPA Calculator v" << version << " ==========================\n";
@@ -556,15 +579,18 @@ int main()
     std::cout << "============================ Author: KJHJason =============================\n";
     std::cout << "============================== License: MIT ===============================\n";
     try {
+        std::stof("awd");
         mainProcess();
     } catch(const std::runtime_error& re) {
         std::cout << "\nRuntime error encountered: " << re.what();
         pEnd();
+        logError(re.what());
         shutdown();
         return 1;
     } catch (const std::exception& e) {
         std::cout << "\nError encountered: " << e.what();
         pEnd();
+        logError(e.what());
         shutdown();
         return 1;
     } catch(...) {
