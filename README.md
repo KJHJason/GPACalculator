@@ -10,8 +10,8 @@ Furthermore, I'm still in the midst of learning C++ so if there are bugs, please
 ## Features
 - Calculate your GPA
 - Edit your results and save the changes
-- Delete a module from the json file
-- Read all modules from the json file
+- Delete a course module from the json file
+- Read all course modules from the json file
 
 ## Dependencies
 - [jsoncpp](https://github.com/open-source-parsers/jsoncpp)
