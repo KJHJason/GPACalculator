@@ -235,7 +235,7 @@ void mainProcess()
         }
     }
     gpaHashMapStruc gpaMap;
-    float totalGPA = -1.0;
+    float totalGPA = -1.0; // placeholder as if it's less than 0, it will print out N/A in the menu
     if (jsonValid) {
         Json::Value values = root["gpa"];
         for(auto it = values.begin(); it != values.end(); it++) {
@@ -246,7 +246,6 @@ void mainProcess()
 
             gpaMap[moduleName] = std::make_tuple(grade, credit);
         }
-        totalGPA = calculateGPA(gpaMap);
     } 
 
     std::string userInput = "";
