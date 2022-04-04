@@ -104,7 +104,7 @@ void shutdown()
 bool checkIfFileExist (const std::string& fileName) 
 {
     struct stat buffer;   
-    return (stat (fileName.c_str(), &buffer) == 0); 
+    return (stat(fileName.c_str(), &buffer) == 0); 
 }
 
 void saveToPC(gpaHashMapStruc &oldGPAMap)
