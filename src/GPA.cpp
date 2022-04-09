@@ -14,7 +14,7 @@
 
 typedef std::map<std::string, std::tuple<std::string, int>> gpaHashMapStruc;
 
-const std::string version = "0.1.0";
+const std::string version = "0.2.0";
 
 Json::Reader reader;
 Json::Value root;
@@ -36,17 +36,24 @@ const std::map<std::string, float> gpaRef = {
     {"P", 0.0} // p for pass (GSM), will not be used during calculation of GPA
 };
 
-std::string uppercaseInput(std::string s)
+bool checkIfUppercase(std::string& input)
+{
+    for (auto &c : input) {
+        if (!isupper(c)) return false;
+    }
+    return true;
+}
+
+void uppercaseInput(std::string& s)
 {
     int i = 0;
     for (auto &c : s) {
         s[i] = toupper(c);
         i++;
     }
-    return s;
 }
 
-std::string titleInput(std::string s)
+void titleInput(std::string& s)
 {
     int toUpper = 1; int i = 0;
     for (auto &c : s) {
@@ -60,10 +67,9 @@ std::string titleInput(std::string s)
         }
         i++;
     }
-    return s;
 }
 
-bool checkIfInputIsInt(std::string s)
+bool checkIfInputIsInt(const std::string& s)
 {
     for (auto &c : s) {
         if (!isdigit(c)) return false;
@@ -71,7 +77,7 @@ bool checkIfInputIsInt(std::string s)
     return true;
 }
 
-bool checkIfInputIsAlphabets(std::string s)
+bool checkIfInputIsAlphabets(const std::string& s)
 {
     for (auto &c : s) {
         if (!isalpha(c)) return false;
@@ -107,16 +113,16 @@ bool checkIfFileExist (const std::string& fileName)
     return (stat(fileName.c_str(), &buffer) == 0); 
 }
 
-void saveToPC(gpaHashMapStruc &oldGPAMap)
+void saveToPC(const gpaHashMapStruc& oldGPAMap)
 {   
     Json::Value newGPAMap;
     Json::StreamWriterBuilder builder;
-    builder["commentStyle"] = "None";
     builder["indentation"] = "    ";
 
-    for (gpaHashMapStruc::const_iterator it = oldGPAMap.begin(); it != oldGPAMap.end(); ++it) {
-        newGPAMap["gpa"][it->first]["grade"] = std::get<0>(it->second);
-        newGPAMap["gpa"][it->first]["credit"] = std::get<1>(it->second);
+    for (auto it = oldGPAMap.begin(); it != oldGPAMap.end(); ++it) {
+        auto f = it->first; auto s = it->second;
+        newGPAMap["gpa"][f]["grade"] = std::get<0>(s);
+        newGPAMap["gpa"][f]["credit"] = std::get<1>(s);
     }
 
     std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
@@ -125,23 +131,23 @@ void saveToPC(gpaHashMapStruc &oldGPAMap)
     out.close();
 }
 
-float gradeToFloat(std::string grade) 
+float gradeToFloat(std::string& grade) 
 {
-    grade = uppercaseInput(grade);
+    if (!checkIfUppercase(grade)) uppercaseInput(grade);
     auto it = gpaRef.find(grade);
-    if ( it != gpaRef.end()) return it->second;
+    if (it != gpaRef.end()) return it->second;
     else return -1.0;
 }
 
-bool checkIfInputIsValidGrade(std::string grade)
+bool checkIfInputIsValidGrade(std::string& grade)
 {
-    grade = uppercaseInput(grade);
+    if (!checkIfUppercase(grade)) uppercaseInput(grade);
     auto it = gpaRef.find(grade);
     if (it != gpaRef.end()) return true;
     else return false;
 }
 
-void printMsgWithNthPrec(const std::vector<std::string>& msgArr, int prec)
+void printMsgWithNthPrec(const std::vector<std::string>& msgArr, const int prec)
 {
     std::cout << std::fixed << std::showpoint;
     std::cout << std::setprecision(prec);
@@ -156,7 +162,7 @@ void printMsgWithNthPrec(const std::vector<std::string>& msgArr, int prec)
     pEnd();
 }
 
-void printMenu(float gpa, bool validJsonFile)
+void printMenu(const float& gpa, const bool& validJsonFile)
 {
     std::cout << "\n\n------------ Menu ------------\n\n";
     std::string gpaString;
@@ -187,14 +193,13 @@ void printMenu(float gpa, bool validJsonFile)
     std::cout << "\n-------------------------------";
 }
 
-void readJsonGPAData(gpaHashMapStruc gpaMap)
+void readJsonGPAData(const gpaHashMapStruc& gpaMap)
 {
     pEnd();
     std::cout << "----------------------------------------------\n\n";
     std::cout << "Reading GPA data...\n\n";
-    for(gpaHashMapStruc::const_iterator it = gpaMap.begin(); it != gpaMap.end(); it++) {
-        std::string moduleName = it->first;
-        std::tuple<std::string, int> value = it->second;
+    for (auto it = gpaMap.begin(); it != gpaMap.end(); it++) {
+        auto moduleName = it->first; auto value = it->second;
         std::cout << "- " << moduleName << " (" << std::get<1>(value) << "): " << std::get<0>(value) << "\n";
     }
     pEnd();
@@ -202,7 +207,7 @@ void readJsonGPAData(gpaHashMapStruc gpaMap)
     std::cout << "\n----------------------------------------------\n";
 }
 
-float calculateGPA(gpaHashMapStruc gpaMap)
+float calculateGPA(const gpaHashMapStruc& gpaMap)
 {
     int totalCredits = 0;
     int totalGrade = 0;
@@ -242,6 +247,7 @@ void mainProcess()
             std::string moduleName = it.key().asString();
 
             std::string grade = values[moduleName]["grade"].asString();
+            if (!checkIfUppercase(grade)) uppercaseInput(grade);
             int credit = values[moduleName]["credit"].asInt();
 
             gpaMap[moduleName] = std::make_tuple(grade, credit);
@@ -252,8 +258,8 @@ void mainProcess()
     while (userInput != "F") {
         totalGPA = calculateGPA(gpaMap);
         printMenu(totalGPA, jsonValid);
-        std::cout << "\nPlease enter your desired command: "; std::getline(std::cin, userInput);
-        userInput = uppercaseInput(userInput);
+        std::cout << "\nPlease enter your desired command: ";
+        std::getline(std::cin, userInput); uppercaseInput(userInput);
         
         if (userInput == "1") {
             // add new module results
@@ -267,8 +273,8 @@ void mainProcess()
                 while (continueAdding) {
                     std::string moduleName;
                     bool addedModuleName = false;
-                    std::cout << "\nPlease enter the module name (x to cancel): "; std::getline(std::cin, moduleName);
-                    moduleName = titleInput(moduleName);
+                    std::cout << "\nPlease enter the module name (x to cancel): ";
+                    std::getline(std::cin, moduleName); titleInput(moduleName);
                     if (moduleName == "X") {
                         continueAdding = false;
                         break;
@@ -279,8 +285,7 @@ void mainProcess()
                         while (1) {
                             std::cout << "Are you sure that you would to add the module with the name, " << moduleName << "? (y/n): ";
                             std::string confirmInput;
-                            std::getline(std::cin, confirmInput);
-                            confirmInput = uppercaseInput(confirmInput);
+                            std::getline(std::cin, confirmInput); uppercaseInput(confirmInput);
                             if (confirmInput == "Y") {
                                 finalModuleName = moduleName;
                                 addedModuleName = true;
@@ -302,8 +307,8 @@ void mainProcess()
                 while (continueAdding) {
                     std::string moduleGrade;
                     bool addedGrade = false;
-                    std::cout << "\nPlease enter your grade for \"" << finalModuleName << "\" (x to cancel): "; std::getline(std::cin, moduleGrade);
-                    moduleGrade = uppercaseInput(moduleGrade);
+                    std::cout << "\nPlease enter your grade for \"" << finalModuleName << "\" (x to cancel): "; 
+                    std::getline(std::cin, moduleGrade); uppercaseInput(moduleGrade);
                     if (moduleGrade == "X") {
                         continueAdding = false;
                         break;
@@ -312,8 +317,7 @@ void mainProcess()
                         while (1) {
                             std::cout << "Are you sure that you would to add your grade, \"" << moduleGrade << "\", to the module, " << finalModuleName << "? (y/n): ";
                             std::string confirmInput;
-                            std::getline(std::cin, confirmInput);
-                            confirmInput = uppercaseInput(confirmInput);
+                            std::getline(std::cin, confirmInput); uppercaseInput(confirmInput);
                             if (confirmInput == "Y") {
                                 finalGrade = moduleGrade;
                                 addedGrade = true;
@@ -336,8 +340,8 @@ void mainProcess()
                     std::string moduleCredit;
                     bool addedCredit = false;
                     std::cout << "\nPlease enter the number of credits for \"" << finalModuleName << "\" (x to cancel): "; 
-                    std::getline(std::cin, moduleCredit);
-                    if (uppercaseInput(moduleCredit) == "X") {
+                    std::getline(std::cin, moduleCredit); uppercaseInput(moduleCredit);
+                    if (moduleCredit == "X") {
                         continueAdding = false;
                         break;
                     }
@@ -347,8 +351,7 @@ void mainProcess()
                             while (1) {
                                 std::string confirmInput;
                                 std::cout << "Are you sure that you would to add the module credits of, " << moduleCredit << ", for the module, " << finalModuleName << "? (y/n): "; 
-                                std::getline(std::cin, confirmInput);
-                                confirmInput = uppercaseInput(confirmInput);
+                                std::getline(std::cin, confirmInput); uppercaseInput(confirmInput);
                                 if (confirmInput == "Y") {
                                     finalCredit = moduleCreditNum;
                                     addedCredit = true;
@@ -384,8 +387,8 @@ void mainProcess()
             while (1) {
                 if (readGPA) readJsonGPAData(gpaMap);
                 std::string moduleToEdit;
-                std::cout << "\nPlease enter the module name that you would to edit (X to cancel): "; std::getline(std::cin, moduleToEdit);
-                moduleToEdit = titleInput(moduleToEdit);
+                std::cout << "\nPlease enter the module name that you would to edit (X to cancel): "; 
+                std::getline(std::cin, moduleToEdit); titleInput(moduleToEdit);
                 if (moduleToEdit == "X") break;
 
                 if (gpaMap.find(moduleToEdit) != gpaMap.end()) {
@@ -411,15 +414,15 @@ void mainProcess()
                         std::cout << "\n----------------------------------------------\n";
                         
                         std::string editCommand;
-                        std::cout << "Enter command: "; std::getline(std::cin, editCommand);
-                        editCommand = uppercaseInput(editCommand);
+                        std::cout << "Enter command: "; 
+                        std::getline(std::cin, editCommand); uppercaseInput(editCommand);
                         if (editCommand == "X") break;
 
                         else if (editCommand == "N") {
                             while (1) {
                                 std::string newModuleName;
-                                std::cout << "Enter new module name (x to cancel): "; std::getline(std::cin, newModuleName);
-                                newModuleName = titleInput(newModuleName);
+                                std::cout << "Enter new module name (x to cancel): "; 
+                                std::getline(std::cin, newModuleName); titleInput(newModuleName);
                                 if (gpaMap.find(newModuleName) != gpaMap.end()) {
                                     std::cout << "Error: Module name already exists...\n";
                                 } else if (newModuleName == "X") {
@@ -437,8 +440,8 @@ void mainProcess()
                         } else if (editCommand == "G") {
                             while (1) {
                                 std::string newGrade;
-                                std::cout << "Enter new grade (x to cancel): "; std::getline(std::cin, newGrade);
-                                newGrade = uppercaseInput(newGrade);
+                                std::cout << "Enter new grade (x to cancel): "; 
+                                std::getline(std::cin, newGrade); uppercaseInput(newGrade);
                                 if (newGrade == "X") {
                                     break;
                                 } else if (!checkIfInputIsValidGrade(newGrade)) {
@@ -453,7 +456,8 @@ void mainProcess()
                         } else if (editCommand == "C") {
                             while (1) {
                                 std::string newCredit;
-                                std::cout << "Enter new credit (x to cancel): "; std::getline(std::cin, newCredit);
+                                std::cout << "Enter new credit (x to cancel): ";
+                                std::getline(std::cin, newCredit); uppercaseInput(newCredit);
                                 if (checkIfInputIsInt(newCredit)) {
                                     int newCreditVal = std::stoi(newCredit);
                                     if (newCreditVal >= 0 && newCreditVal <= 99) {
@@ -463,7 +467,7 @@ void mainProcess()
                                     } else {
                                         std::cout << "Error: Credit input is either too high or is in the negative range...\n";
                                     }
-                                } else if (uppercaseInput(newCredit) == "X") {
+                                } else if (newCredit == "X") {
                                     break;
                                 } else {
                                     std::cout << "Error: Invalid credit input or credit input was larger than 99...\n";
@@ -473,8 +477,7 @@ void mainProcess()
                         } else if (editCommand == "S" && editedInfo) {
                             std::cout << "Are you sure that you would to save the changes? (y/n): ";
                             std::string confirmSave;
-                            std::getline(std::cin, confirmSave);
-                            confirmSave = uppercaseInput(confirmSave);
+                            std::getline(std::cin, confirmSave); uppercaseInput(confirmSave);
                             if (confirmSave == "Y") {
                                 saveToPC(gpaMap);
                                 editedInfo = false;
@@ -487,8 +490,7 @@ void mainProcess()
                         } else if (editCommand == "B" && editedInfo) {
                             std::cout << "Are you sure that you would to revert the changes? (y/n): ";
                             std::string confirmSave;
-                            std::getline(std::cin, confirmSave);
-                            confirmSave = uppercaseInput(confirmSave);
+                            std::getline(std::cin, confirmSave); uppercaseInput(confirmSave);
                             if (confirmSave == "Y") {
                                 gpaMap.erase(moduleToEdit);
                                 gpaMap[initialModName] = std::make_tuple(initialGrade, initialCredit);
@@ -517,15 +519,14 @@ void mainProcess()
             while (1) {
                 if (readGPA) readJsonGPAData(gpaMap);
                 std::string moduleToRemove;
-                std::cout << "\nPlease enter the module name that you would like to remove (X to cancel): "; std::getline(std::cin, moduleToRemove);
-                moduleToRemove = titleInput(moduleToRemove);
+                std::cout << "\nPlease enter the module name that you would like to remove (X to cancel): "; 
+                std::getline(std::cin, moduleToRemove); titleInput(moduleToRemove);
                 if (moduleToRemove == "X") break;
                 if (gpaMap.find(moduleToRemove) != gpaMap.end()) {
                     std::string confirmErase;
                     while (1) {
                         std::cout << "Are you sure you want to remove the module, " << moduleToRemove << "? (Y/N): "; 
-                        std::getline(std::cin, confirmErase);
-                        confirmErase = uppercaseInput(confirmErase);
+                        std::getline(std::cin, confirmErase); uppercaseInput(confirmErase);
                         if (confirmErase == "Y" || confirmErase == "N") break;
                         else std::cout << "Please enter \"Y\" or \"N\"\n";
                     }
@@ -552,7 +553,8 @@ void mainProcess()
     }
 }
 
-void logError(std::string errorMessage) {
+void logError(std::string errorMessage) 
+{
     if (!checkIfFileExist(errorLogFile)) {
         std::ofstream errorLogFileStream;
         errorLogFileStream.open(errorLogFile);
